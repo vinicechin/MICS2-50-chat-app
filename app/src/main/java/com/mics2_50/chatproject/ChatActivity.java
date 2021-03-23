@@ -41,7 +41,7 @@ public class ChatActivity extends AppCompatActivity {
         final String message = editTextMessage.getText().toString();
         if (message.length() > 0) {
             this.onMessage(message, this.username, true);
-            // Should send the message to the network here
+            // Should also send the message to the network here
             editTextMessage.getText().clear();
 
             // simulates an answer
