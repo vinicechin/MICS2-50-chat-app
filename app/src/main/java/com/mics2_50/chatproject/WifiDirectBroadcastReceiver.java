@@ -47,7 +47,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                 // peers list changed
                 if (manager != null) {
                     if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        Log.d("permission", "not granted for fine location");
+                        Log.d(TAG+"-PERM", "not granted for fine location");
                         ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
                     }
                     manager.requestPeers(channel, peerListListener);
@@ -62,8 +62,15 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                 manager.requestConnectionInfo(channel, (WifiP2pManager.ConnectionInfoListener) activity);
                 break;
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
-                Log.d(TAG, "device changed");
+                Log.d(TAG, "device changed - get peers");
                 // Device's wifi state changing
+                if (manager != null) {
+                    if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        Log.d(TAG+"-PERM", "not granted for fine location");
+                        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                    }
+                    manager.requestPeers(channel, peerListListener);
+                }
                 break;
             default:
                 break;

@@ -90,29 +90,29 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.C
         receiver = new WifiDirectBroadcastReceiver(manager, channel, this, peerListListener);
 
         // makes sure to leave current group before entering a new one
-//        if (manager != null && channel != null) {
-//            manager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
-//                @Override
-//                public void onGroupInfoAvailable(WifiP2pGroup group) {
-//                    if (group != null && manager != null && channel != null) {
-//                        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
-//
-//                            @Override
-//                            public void onSuccess() {
-//                                Log.d(TAG, "removeGroup onSuccess -");
-//                            }
-//
-//                            @Override
-//                            public void onFailure(int reason) {
-//                                Log.d(TAG, "removeGroup onFailure -" + reason);
-//                            }
-//                        });
-//                    }
-//                }
-//            });
-//        }
+        if (manager != null && channel != null) {
+            manager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
+                @Override
+                public void onGroupInfoAvailable(WifiP2pGroup group) {
+                    if (group != null && manager != null && channel != null) {
+                        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
 
-//        setDeviceName(username);
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TAG, "removeGroup onSuccess");
+                            }
+
+                            @Override
+                            public void onFailure(int reason) {
+                                Log.d(TAG, "removeGroup onFailure -" + reason);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        setDeviceName(username);
 
         manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
             @Override

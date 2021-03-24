@@ -11,24 +11,23 @@
         android:id="@+id/loggedIn"
         android:layout_width="wrap_content"
         android:layout_height="33dp"
-        android:layout_marginBottom="7dp"
-        android:layout_marginTop="10dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="7dp"
         android:text="You are logged in as "
-        android:textColor="@android:color/white"
-        android:textSize="15dp"
-        />
+        android:textColor="@color/black"
+        android:textSize="15dp" />
+
     <TextView
         android:id="@+id/availUsers"
         android:layout_width="wrap_content"
         android:layout_height="23dp"
-        android:layout_marginBottom="7dp"
-        android:layout_marginTop="10dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="7dp"
         android:text="Available Users:"
-        android:textColor="@android:color/white"
-        android:textSize="20dp"
-        />
+        android:textColor="@color/black"
+        android:textSize="20dp" />
     <ListView
         android:id="@+id/peersListView"
         android:layout_width="fill_parent"
