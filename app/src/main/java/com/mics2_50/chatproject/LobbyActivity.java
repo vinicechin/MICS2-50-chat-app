@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.ConnectionInfoListener {
-    private final String TAG = "CHAT-LOBBYACT";
+    private final String TAG = "APP-Lobby-Act";
     private String username;
     private int PORT = 8888;
 
@@ -44,6 +44,7 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.C
     private PeerListListener peerListListener = new PeerListListener() {
         @Override
         public void onPeersAvailable(WifiP2pDeviceList peerList) {
+            // here to the listener
             Log.d(TAG, "peers available updated");
             // Out with the old, in with the new.
             ArrayList<WifiP2pDevice> peersNameFixed = new ArrayList<WifiP2pDevice>();
@@ -54,6 +55,7 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.C
             }
             peers = new WifiP2pDeviceList(peerList);
 
+            // below here to service
             peersAdapter.clear();
             Log.d(TAG + "-PCHANGE", String.valueOf(peerList.getDeviceList().size()));
 
@@ -87,6 +89,8 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.C
         TextView loggedInTextView = (TextView) findViewById(R.id.loggedIn);
         loggedInTextView.setText("You are logged in as " + username);
 
+
+        // remove below here
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
@@ -96,8 +100,71 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.C
         channel = manager.initialize(this, getMainLooper(), null);
         receiver = new WifiDirectBroadcastReceiver(manager, channel, this, peerListListener);
 
+        leaveGroups();
+
+        setDeviceName(username);
+
+        discoverPeers();
+
+        peersListView = (ListView) findViewById(R.id.peersListView);
+        TextView emptyText = (TextView) findViewById(android.R.id.empty);
+        peersListView.setEmptyView(emptyText);
+        peersAdapter = new ArrayAdapter<String>(this, R.layout.fragment_peer, R.id.textView);
+        setPeersList(peersAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "on resume called");
+        registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
+
+    @Override
+    public void onConnectionInfoAvailable(WifiP2pInfo info) {
+
+    }
+
+    public void discoverPeers() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("permission", "not granted for fine location");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        }
+
+        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                // Called just to update users list
+                Log.d(TAG, "discover peers sent");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                // Called just to update users list
+                Log.d(TAG, "discover peers not sent: " + reason);
+            }
+        });
+    }
+
+    public void setPeersList(ArrayAdapter<String> peersAdapter) {
+        peersListView = (ListView) findViewById(R.id.peersListView);
+        peersListView.setAdapter(peersAdapter);
+    }
+
+    public void leaveGroups() {
         // makes sure to leave current group before entering a new one
         if (manager != null && channel != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Log.d("permission", "not granted for fine location");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+            }
+
             manager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
                 @Override
                 public void onGroupInfoAvailable(WifiP2pGroup group) {
@@ -118,47 +185,6 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.C
                 }
             });
         }
-
-        setDeviceName(username);
-
-        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                // Called just to update users list
-                Log.d(TAG, "discover peers sent");
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                // Called just to update users list
-                Log.d(TAG, "discover peers not sent: " + reason);
-            }
-        });
-
-        peersListView = (ListView) findViewById(R.id.peersListView);
-        TextView emptyText = (TextView) findViewById(android.R.id.empty);
-        peersListView.setEmptyView(emptyText);
-        peersAdapter = new ArrayAdapter<String>(this, R.layout.fragment_peer, R.id.textView);
-
-        peersListView.setAdapter(peersAdapter);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "on resume called");
-        registerReceiver(receiver, intentFilter);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(receiver);
-    }
-
-    @Override
-    public void onConnectionInfoAvailable(WifiP2pInfo info) {
-
     }
 
     public void setDeviceName(String username) {
@@ -191,21 +217,7 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.C
 
     public void onRefresh(View view) {
         Log.d(TAG, "Refresh clicked");
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "No permission for location");
-            return;
-        }
-        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                //will not provide info about who it discovered
-            }
-
-            @Override
-            public void onFailure(int reasonCode) {
-
-            }
-        });
+        discoverPeers();
     }
 
 }

@@ -34,14 +34,17 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPref = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
 
+        // Set username if already stored
         editText = (EditText) findViewById(R.id.editTextUserName);
         editText.setText(sharedPref.getString(USER_NAME, ""));
 
+        // Disable button if no username typed yet
         enterButton = (Button) findViewById(R.id.enter_button);
         if (editText.getText().toString().equals("")) {
             enterButton.setEnabled(false);
         }
 
+        // Add text change listener to username field
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Add key pressed listener to username field
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -74,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Initial verification of all permissions
         checkPermission();
     }
 
