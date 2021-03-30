@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 
 public class WifiDirectController implements WifiP2pManager.ConnectionInfoListener {
     private final String TAG = "WDS-Main";
+    private final int PORT = 8888;
 
     private final IntentFilter intentFilter = new IntentFilter();
 
@@ -46,7 +47,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
 
         manager = (WifiP2pManager) activity.getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(activity, activity.getMainLooper(), null);
-        receiver = new WifiDirectBroadcastReceiver(manager, channel, activity, peersListListener);
+        receiver = new WifiDirectBroadcastReceiver(manager, channel, activity, this, peersListListener);
 
         peersAdapter = new ArrayAdapter<String>(activity, R.layout.fragment_peer, R.id.textView);
 

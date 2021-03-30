@@ -15,19 +15,23 @@ import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
+import com.mics2_50.chatproject.wifidirect.WifiDirectController;
+
 public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
     private final String TAG = "CHAT-WIFIBROADREC";
     private WifiP2pManager manager;
     private Channel channel;
     private Activity activity;
     private PeerListListener peerListListener;
+    private WifiDirectController controller;
 
-    public WifiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel, Activity activity, PeerListListener peerListListener) {
+    public WifiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel, Activity activity, WifiDirectController controller, PeerListListener peerListListener) {
         super();
         this.manager = manager;
         this.channel = channel;
         this.activity = activity;
         this.peerListListener = peerListListener;
+        this.controller = controller;
     }
 
     @Override
@@ -59,7 +63,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver {
                 }
                 // connection state changed - new connections or lost connections
                 Log.d(TAG, "connection changed");
-                manager.requestConnectionInfo(channel, (WifiP2pManager.ConnectionInfoListener) activity);
+                manager.requestConnectionInfo(channel, (WifiP2pManager.ConnectionInfoListener) controller);
                 break;
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
                 Log.d(TAG, "device changed - get peers");
