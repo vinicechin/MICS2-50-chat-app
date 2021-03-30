@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,7 +19,10 @@ import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
     public static final String USER_NAME = "com.mics2_50.chatproject.USERNAME";
-    private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
+//    private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
+    public static final String PREFERENCES_NAME = "com.mics2_50.chatproject.dataStorage";
+
+    private SharedPreferences sharedPref;
 
     private EditText editText;
     private Button enterButton;
@@ -28,10 +32,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        enterButton = (Button) findViewById(R.id.enter_button);
-        enterButton.setEnabled(false);
+        sharedPref = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
 
         editText = (EditText) findViewById(R.id.editTextUserName);
+        editText.setText(sharedPref.getString(USER_NAME, ""));
+
+        enterButton = (Button) findViewById(R.id.enter_button);
+        if (editText.getText().toString().equals("")) {
+            enterButton.setEnabled(false);
+        }
+
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -75,8 +85,14 @@ public class MainActivity extends AppCompatActivity {
         String username = editText.getText().toString();
         intent.putExtra(USER_NAME, username);
 
-        // Go to the ChatActivity
-        startActivity(intent);
+        // Save username on data storage
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(USER_NAME, username);
+
+        // Go to the ChatActivity after commit of username to storage
+        if (editor.commit()) {
+            startActivity(intent);
+        }
     }
 
     private void checkPermission() {
