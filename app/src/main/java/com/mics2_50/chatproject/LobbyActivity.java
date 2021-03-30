@@ -56,6 +56,13 @@ public class LobbyActivity extends AppCompatActivity implements WifiP2pManager.C
 
             peersAdapter.clear();
             Log.d(TAG + "-PCHANGE", String.valueOf(peerList.getDeviceList().size()));
+
+            // mock to code UI:
+            if (peerList.getDeviceList().size() == 0) {
+                peersAdapter.add("Mock dude");
+                Log.d(TAG + "-PNAME", "Mock dude");
+            }
+
             for (WifiP2pDevice peer : peerList.getDeviceList()) {
                 peersAdapter.add(peer.deviceName); //+ "\n" + peer.deviceAddress
                 Log.d(TAG + "-PNAME", peer.deviceName);
