@@ -35,11 +35,11 @@ public class MainActivity extends AppCompatActivity {
         sharedPref = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
 
         // Set username if already stored
-        editText = (EditText) findViewById(R.id.editTextUserName);
+        editText = findViewById(R.id.editTextUserName);
         editText.setText(sharedPref.getString(USER_NAME, ""));
 
         // Disable button if no username typed yet
-        enterButton = (Button) findViewById(R.id.enter_button);
+        enterButton = findViewById(R.id.enter_button);
         if (editText.getText().toString().equals("")) {
             enterButton.setEnabled(false);
         }
@@ -67,15 +67,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Add key pressed listener to username field
-        editText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    enterPressed(v);
-                    return true;
-                }
-                return false;
+        editText.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                enterPressed(v);
+                return true;
             }
+            return false;
         });
 
         // Initial verification of all permissions
