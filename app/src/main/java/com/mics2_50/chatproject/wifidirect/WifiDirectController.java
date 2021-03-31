@@ -64,7 +64,8 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     public void updatePeersAdapterWithMock() {
         peersAdapter.clear();
         peersAdapter.add("Mock dude");
-        Log.d(TAG + "-AddPeer", "Mock dude");
+        peersAdapter.add("Mock dude 2");
+        Log.d(TAG + "-AddPeer", "Mock dudes");
     }
 
     public void discoverPeers() {
@@ -143,6 +144,10 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         } catch (Exception e) {
             Log.d(TAG, "No such method");
         }
+    }
+
+    public boolean connectToPeer(String peername) {
+        return false;
     }
 
     @Override

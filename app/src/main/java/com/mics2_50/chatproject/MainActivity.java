@@ -19,7 +19,6 @@ import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
     public static final String USER_NAME = "com.mics2_50.chatproject.USERNAME";
-//    private final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
     public static final String PREFERENCES_NAME = "com.mics2_50.chatproject.dataStorage";
 
     private SharedPreferences sharedPref;

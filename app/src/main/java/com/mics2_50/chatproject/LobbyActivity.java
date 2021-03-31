@@ -5,9 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mics2_50.chatproject.wifidirect.WifiDirectController;
 
@@ -37,7 +40,7 @@ public class LobbyActivity extends AppCompatActivity {
         String username = intent.getStringExtra(MainActivity.USER_NAME);
 
         TextView loggedInTextView = findViewById(R.id.loggedIn);
-        loggedInTextView.setText(String.format("You are logged in as %s", username));
+        loggedInTextView.setText(String.format("Welcome %s!", username));
 
         controller.setDeviceName(username);
     }
@@ -48,6 +51,19 @@ public class LobbyActivity extends AppCompatActivity {
         peersListView.setEmptyView(emptyText);
         peersListView = findViewById(R.id.peersListView);
         peersListView.setAdapter(controller.getPeersAdapter());
+        peersListView.setOnItemClickListener((parent, view, position, id) -> {
+            TextView item = view.findViewById(R.id.textView);
+            String peername = item.getText().toString();
+
+            Log.d(TAG, "Chat clicked: " + peername);
+            boolean result = controller.connectToPeer(peername);
+
+            if (!result) {
+                Toast toast = Toast.makeText(this, "Couldn't connect to " + peername, Toast.LENGTH_LONG);
+//                toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL,0,0);
+                toast.show();
+            }
+        });
     }
 
     @Override

@@ -4,5 +4,9 @@
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
     <string name="button_enter">Enter</string>
+    <string name="button_refresh">Refresh</string>
+
     <string name="mock_user">Mock</string>
+    <string name="no_peers">No users available to chat, sorry...</string>
+    <string name="available_chats">Available Chats</string>
 </resources>
