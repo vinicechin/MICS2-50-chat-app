@@ -45,17 +45,6 @@
         android:paddingEnd="2dp"
         android:paddingRight="2dp">
     </ListView>
-    <TextView
-        android:id="@android:id/empty"
-        android:layout_width="wrap_content"
-        android:layout_height="33dp"
-        android:layout_marginBottom="7dp"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/no_peers"
-        android:textColor="@android:color/white"
-        android:textSize="15dp"
-        />
 
     <Button
         android:id="@+id/button"
