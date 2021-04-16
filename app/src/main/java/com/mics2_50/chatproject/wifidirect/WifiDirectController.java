@@ -28,6 +28,8 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     private final WifiP2pManager manager;
     private final WifiDirectBroadcastReceiver receiver;
 
+    private String[] deviceNames;
+    private WifiP2pDevice[] devices;
     private final ArrayAdapter<String> peersAdapter;
     private final Activity activity;
 
@@ -55,10 +57,21 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
 
     public void updatePeersAdapter(WifiP2pDeviceList peers) {
         peersAdapter.clear();
+
+        deviceNames = new String[peers.getDeviceList().size()];
+        devices = new WifiP2pDevice[peers.getDeviceList().size()];
+
+        int index = 0;
         for (WifiP2pDevice peer : peers.getDeviceList()) {
-            peersAdapter.add(peer.deviceName);
             Log.d(TAG + "-AddPeer", peer.deviceName);
+
+            deviceNames[index] = peer.deviceName;
+            devices[index] = peer;
+
+            index++;
         }
+
+        peersAdapter.addAll(deviceNames);
     }
 
     public void updatePeersAdapterWithMock() {
