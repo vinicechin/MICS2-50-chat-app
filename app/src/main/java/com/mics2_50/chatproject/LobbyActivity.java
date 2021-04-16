@@ -56,14 +56,20 @@ public class LobbyActivity extends AppCompatActivity {
             String peername = item.getText().toString();
 
             Log.d(TAG, "Chat clicked: " + peername);
-            boolean result = controller.connectToPeer(peername);
-
-            if (!result) {
-                Toast toast = Toast.makeText(this, "Couldn't connect to " + peername, Toast.LENGTH_LONG);
-//                toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL,0,0);
-                toast.show();
-            }
+            controller.connectToPeer(position);
         });
+    }
+
+    public void connectionWithPeerSuccess(String peername) {
+        Toast toast = Toast.makeText(this, "Connected to  " + peername, Toast.LENGTH_LONG);
+//                toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL,0,0);
+        toast.show();
+    }
+
+    public void connectionWithPeerFail(String peername) {
+        Toast toast = Toast.makeText(this, "Couldn't connect to " + peername, Toast.LENGTH_LONG);
+//                toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL,0,0);
+        toast.show();
     }
 
     @Override

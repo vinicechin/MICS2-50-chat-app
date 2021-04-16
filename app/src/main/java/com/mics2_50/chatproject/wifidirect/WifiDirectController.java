@@ -5,12 +5,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
@@ -159,8 +161,30 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         }
     }
 
-    public boolean connectToPeer(String peername) {
-        return false;
+    public boolean connectToPeer(int i) {
+        final WifiP2pDevice device = devices[i];
+        WifiP2pConfig config = new WifiP2pConfig();
+        config.deviceAddress = device.deviceAddress;
+
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("permission", "not granted for fine location");
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+        }
+        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+//                activity.connectionWithPeerSuccess(deviceNames[i]);
+                Toast.makeText(activity.getApplicationContext(), "Connected to  " + deviceNames[i], Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(int i) {
+//                activity.connectionWithPeerFail(deviceNames[i]);
+                Toast.makeText(activity.getApplicationContext(), "Couldn't connect to " + deviceNames[i], Toast.LENGTH_LONG).show();
+            }
+        });
+
+        return true;
     }
 
     @Override
