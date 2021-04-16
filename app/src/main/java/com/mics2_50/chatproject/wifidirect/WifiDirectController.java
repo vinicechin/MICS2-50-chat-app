@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat;
 import com.mics2_50.chatproject.R;
 
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 
 public class WifiDirectController implements WifiP2pManager.ConnectionInfoListener {
     private final String TAG = "WDS-Main";
@@ -161,7 +162,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         }
     }
 
-    public boolean connectToPeer(int i) {
+    public void connectToPeer(int i) {
         final WifiP2pDevice device = devices[i];
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
@@ -183,12 +184,18 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
                 Toast.makeText(activity.getApplicationContext(), "Couldn't connect to " + deviceNames[i], Toast.LENGTH_LONG).show();
             }
         });
-
-        return true;
     }
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
+        final InetAddress groupOwnerAddress = info.groupOwnerAddress;
 
+        if(info.groupFormed) {
+            if (info.isGroupOwner) {
+                Log.d(TAG, "onConnectionInfoAvailable - Host");
+            } else {
+                Log.d(TAG, "nConnectionInfoAvailable - Client");
+            }
+        }
     }
 }
