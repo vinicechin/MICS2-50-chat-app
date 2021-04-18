@@ -35,6 +35,8 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     private WifiP2pDevice[] devices;
     private final ArrayAdapter<String> peersAdapter;
     private final Activity activity;
+    private boolean isMock;
+//    private Thread service;
 
     public WifiDirectController(Activity activity) {
         WifiDirectPeersListListener peersListListener = new WifiDirectPeersListListener(this);
@@ -60,6 +62,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
 
     public void updatePeersAdapter(WifiP2pDeviceList peers) {
         peersAdapter.clear();
+        this.isMock = false;
 
         deviceNames = new String[peers.getDeviceList().size()];
         devices = new WifiP2pDevice[peers.getDeviceList().size()];
@@ -79,6 +82,8 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
 
     public void updatePeersAdapterWithMock() {
         peersAdapter.clear();
+        this.isMock = true;
+
         peersAdapter.add("Mock dude");
         peersAdapter.add("Mock dude 2");
         Log.d(TAG + "-AddPeer", "Mock dudes");
@@ -141,7 +146,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     }
 
     public void setDeviceName(String username) {
-        // set name to discover based on the one typed by the user in previous activity
+        // set name to discover based on the one typed by the user
         try {
             Method m = manager.getClass().getMethod("setDeviceName", WifiP2pManager.Channel.class, String.class, WifiP2pManager.ActionListener.class);
             m.setAccessible(true);
@@ -163,6 +168,11 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     }
 
     public void connectToPeer(int i) {
+        if (this.isMock) {
+            Log.d(TAG, "Mock client clicked");
+            return;
+        }
+
         final WifiP2pDevice device = devices[i];
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
@@ -193,8 +203,12 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         if(info.groupFormed) {
             if (info.isGroupOwner) {
                 Log.d(TAG, "onConnectionInfoAvailable - Host");
+//                service=new ServerClass();
+//                service.start();
             } else {
                 Log.d(TAG, "nConnectionInfoAvailable - Client");
+//                service=new ClientClass(groupOwnerAddress);
+//                service.start();
             }
         }
     }
