@@ -3,6 +3,7 @@ package com.mics2_50.chatproject.wifidirect;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
+import com.mics2_50.chatproject.ChatActivity;
 import com.mics2_50.chatproject.R;
 
 import java.lang.reflect.Method;
@@ -36,11 +38,13 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     private final ArrayAdapter<String> peersAdapter;
     private final Activity activity;
     private boolean isMock;
+    private String username;
 //    private Thread service;
 
-    public WifiDirectController(Activity activity) {
+    public WifiDirectController(Activity activity, String username) {
         WifiDirectPeersListListener peersListListener = new WifiDirectPeersListListener(this);
         this.activity = activity;
+        this.username = username;
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -185,12 +189,14 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
             @Override
             public void onSuccess() {
 //                activity.connectionWithPeerSuccess(deviceNames[i]);
-                Toast.makeText(activity.getApplicationContext(), "Connected to  " + deviceNames[i], Toast.LENGTH_LONG).show();
+                Log.d(TAG, "connection sent to " + deviceNames[i]);
+                Toast.makeText(activity.getApplicationContext(), "Connection sent to  " + deviceNames[i], Toast.LENGTH_LONG).show();
             }
 
             @Override
-            public void onFailure(int i) {
+            public void onFailure(int reason) {
 //                activity.connectionWithPeerFail(deviceNames[i]);
+                Log.d(TAG, "connection not sent to " + deviceNames[i] + ": " + reason);
                 Toast.makeText(activity.getApplicationContext(), "Couldn't connect to " + deviceNames[i], Toast.LENGTH_LONG).show();
             }
         });
@@ -201,15 +207,23 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         final InetAddress groupOwnerAddress = info.groupOwnerAddress;
 
         if(info.groupFormed) {
-            if (info.isGroupOwner) {
-                Log.d(TAG, "onConnectionInfoAvailable - Host");
-//                service=new ServerClass();
-//                service.start();
-            } else {
-                Log.d(TAG, "nConnectionInfoAvailable - Client");
-//                service=new ClientClass(groupOwnerAddress);
-//                service.start();
-            }
+            Log.d(TAG, "onConnectionInfoAvailable - Group formed");
+            Intent intent = new Intent(activity, ChatActivity.class);
+            intent.putExtra("info", info);
+            intent.putExtra("name", username);
+            activity.startActivityForResult(intent, 1);
+
+//            if (info.isGroupOwner) {
+//                Log.d(TAG, "onConnectionInfoAvailable - Host");
+////                service=new ServerClass();
+////                service.start();
+//            } else {
+//                Log.d(TAG, "nConnectionInfoAvailable - Client");
+////                service=new ClientClass(groupOwnerAddress);
+////                service.start();
+//            }
+        } else {
+            Log.d(TAG, "onConnectionInfoAvailable - Group not formed");
         }
     }
 }

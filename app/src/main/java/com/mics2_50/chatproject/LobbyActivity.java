@@ -19,13 +19,18 @@ public class LobbyActivity extends AppCompatActivity {
 
     private ListView peersListView;
     private WifiDirectController controller;
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
-        controller = new WifiDirectController(this);
+        // Get user name set in MainActivity
+        Intent intent = getIntent();
+        this.username = intent.getStringExtra(MainActivity.USER_NAME);
+
+        controller = new WifiDirectController(this, this.username);
 
         setUserName();
         setPeersList();
@@ -35,12 +40,8 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     private void setUserName() {
-        // Get user name set in MainActivity
-        Intent intent = getIntent();
-        String username = intent.getStringExtra(MainActivity.USER_NAME);
-
         TextView loggedInTextView = findViewById(R.id.loggedIn);
-        loggedInTextView.setText(String.format("Welcome %s!", username));
+        loggedInTextView.setText(String.format("Welcome %s!", this.username));
 
         controller.setDeviceName(username);
     }
@@ -89,6 +90,14 @@ public class LobbyActivity extends AppCompatActivity {
     public void onRefresh(View view) {
         Log.d(TAG, "Refresh clicked");
         controller.discoverPeers();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            controller.leaveGroups();
+        }
     }
 
 }
