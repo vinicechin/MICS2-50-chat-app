@@ -25,12 +25,10 @@ public class WifiDirectPeersListListener implements WifiP2pManager.PeerListListe
         WifiP2pDeviceList peers = new WifiP2pDeviceList(peerList);
 
         if (peers.getDeviceList().size() == 0) {
-            Log.d(TAG, "Update peers with mock");
-            controller.updatePeersAdapterWithMock();
-        } else {
-            Log.d(TAG, "Update peers with list");
-            controller.updatePeersAdapter(peers);
+            Log.d(TAG, "No peers found");
         }
+        Log.d(TAG, "Update peers list");
+        controller.updatePeersAdapter(peers);
 
     }
 }

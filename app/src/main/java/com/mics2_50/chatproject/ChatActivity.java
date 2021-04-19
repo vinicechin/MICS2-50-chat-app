@@ -1,9 +1,14 @@
 package com.mics2_50.chatproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.wifi.p2p.WifiP2pInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -11,15 +16,39 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.mics2_50.chatproject.adapter.MessageAdapter;
+import com.mics2_50.chatproject.model.ChatClient;
 import com.mics2_50.chatproject.model.Message;
+import com.mics2_50.chatproject.wifidirect.WifiDirectController;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.logging.Logger;
 
 public class ChatActivity extends AppCompatActivity {
+    private final String TAG = "APP-Chat-Act";
+    private final int PORT = 8000;
+
     private EditText editTextMessage;
     private String username;
-    private MessageAdapter messageAdapter;
+    private String peername;
+    private WifiP2pInfo info;
+    private static MessageAdapter messageAdapter;
     private ListView messagesView;
+
+    private ServerSocket serverSocket;
+    private Socket socket;
+    private ChatClient client;
+    private SocketMessageSender sender;
+    BufferedReader fromGroupOwner;
+    PrintWriter toGroupOwner;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -32,29 +61,50 @@ public class ChatActivity extends AppCompatActivity {
         messagesView = (ListView) findViewById(R.id.messages_view);
         messagesView.setAdapter(messageAdapter);
 
+        sender = new SocketMessageSender();
+
         // Get user name set in MainActivity
         Intent intent = getIntent();
         username = intent.getStringExtra(MainActivity.USER_NAME);
+        peername = intent.getStringExtra(WifiDirectController.PEER_NAME);
+        Bundle bundle = intent.getExtras();
+        info = (WifiP2pInfo) bundle.get(WifiDirectController.USER_INFO);
+
+        // Set up socket connection between users: depend if is group owner or not
+        if (info.isGroupOwner) {
+            Log.d(TAG, "onConnectionInfoAvailable - Host");
+            try {
+                serverSocket = new ServerSocket(PORT);
+            } catch (Exception e) {
+                Log.d(TAG, "on create ServerSocket: "+ e.getMessage());
+            }
+            getClientInfo.start();
+        } else {
+            Log.d(TAG, "nConnectionInfoAvailable - Client");
+            try{
+                connectToOwner.start();
+            }catch(Exception e){
+                Log.d("Chat", "notGroupOwner "+ e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
     public void sendMessage(final View view) {
         final String message = editTextMessage.getText().toString();
         if (message.length() > 0) {
-            this.onMessage(message, this.username, true);
-            // Should also send the message to the network here
-            editTextMessage.getText().clear();
+            final Message msg = new Message(message, username, true);
+            this.onMessage(msg);
+            Log.d("Chat","Executing sendMessage");
 
-            // simulates an answer
-            Log.d("ChatActivity", message);
-            if (message.equalsIgnoreCase("Hi")) {
-                this.onMessage("Hi, how are you?", "Mock", false);
-            }
+            sender.message = msg;
+            sender.start();
+
+            editTextMessage.getText().clear();
         }
     }
 
-    public void onMessage(String text, String username, boolean fromUser) {
-        final Message message = new Message(text, username, fromUser);
-
+    public void onMessage(Message message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -63,5 +113,112 @@ public class ChatActivity extends AppCompatActivity {
                 messagesView.setSelection(messagesView.getCount() - 1);
             }
         });
+    }
+
+    Thread connectToOwner = new Thread() {
+        @Override
+        public void run() {
+            InetAddress groupOwner = info.groupOwnerAddress;
+            socket = new Socket();
+            try {
+                socket.connect(new InetSocketAddress(groupOwner.getHostAddress(), PORT));
+                fromGroupOwner = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                toGroupOwner = new PrintWriter(socket.getOutputStream(), true);
+                toGroupOwner.println(username);
+                Log.d(TAG,"Name sent to Owner");
+
+                String partnerName = fromGroupOwner.readLine();
+                getSupportActionBar().setTitle(partnerName);
+            }
+            catch (IOException e) {
+                Log.d(TAG,"Exception in connectToOwner" + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    };
+
+
+    Thread getClientInfo = new Thread() {
+        @Override
+        public void run() {
+
+            try{
+                Log.d(TAG,"waiting for client");
+                Socket clientSocket = serverSocket.accept();
+                Log.d(TAG,"Client found");
+                BufferedReader dataIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter dataOut = new PrintWriter(clientSocket.getOutputStream(),true);
+                String clientName = dataIn.readLine();
+                dataOut.println(username);
+                client = new ChatClient(clientName, dataIn, dataOut, ChatActivity.this);
+                client.startListening();
+
+                Log.d(TAG, "client added");
+
+                getSupportActionBar().setTitle(clientName);
+
+            }catch(Exception e) {
+                Log.d(TAG,"Exception in getClientInfo" + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    };
+
+    Thread listenToGroupOwner = new Thread() {
+        @Override
+        public void run() {
+            try{
+                Log.d(TAG,"Started listening to GroupOwner");
+                while(true){
+                    String data;
+                    if((data = fromGroupOwner.readLine()) != null){
+                        Log.d("Chat","Calling receive");
+                        receive(data);
+                    }
+                }
+            }catch(Exception e){
+                Log.d(TAG,"Exception in listenToGroupOwner" + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    };
+
+    public void receive(String data){
+        Log.d(TAG,"received something:");
+        Log.d(TAG,data);
+        Message msg = new Message(data);
+        this.onMessage(msg);
+    }
+
+    public class SocketMessageSender extends Thread {
+        public Message message;
+
+        @Override
+        public void run() {
+            Log.d("Chat","Sending Message");
+            if(info.isGroupOwner){
+                PrintWriter dataOut = client.getDataOut();
+                dataOut.println(message.getJSONString(username));
+                Log.d(TAG,"Group Owner sent Message");
+            } else {
+                toGroupOwner.println(message.getJSONString(username));
+                Log.d(TAG,"Client sent message");
+            }
+        }
+
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try{
+            if(info.isGroupOwner) {
+                client.stopListening();
+                serverSocket.close();
+            }else{
+                socket.close();
+            }
+        }catch(Exception e){
+        }
     }
 }

@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.mics2_50.chatproject.ChatActivity;
+import com.mics2_50.chatproject.MainActivity;
 import com.mics2_50.chatproject.R;
 
 import java.lang.reflect.Method;
@@ -25,7 +26,8 @@ import java.net.InetAddress;
 
 public class WifiDirectController implements WifiP2pManager.ConnectionInfoListener {
     private final String TAG = "WDS-Main";
-//    private final int PORT = 8888;
+    public static final String USER_INFO = "com.mics2_50.chatproject.USER_INFO";
+    public static final String PEER_NAME = "com.mics2_50.chatproject.PEER_NAME";
 
     private final IntentFilter intentFilter = new IntentFilter();
 
@@ -39,12 +41,13 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     private final Activity activity;
     private boolean isMock;
     private String username;
-//    private Thread service;
+    private String peername;
 
     public WifiDirectController(Activity activity, String username) {
         WifiDirectPeersListListener peersListListener = new WifiDirectPeersListListener(this);
         this.activity = activity;
         this.username = username;
+        this.peername = "";
 
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -82,15 +85,6 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         }
 
         peersAdapter.addAll(deviceNames);
-    }
-
-    public void updatePeersAdapterWithMock() {
-        peersAdapter.clear();
-        this.isMock = true;
-
-        peersAdapter.add("Mock dude");
-        peersAdapter.add("Mock dude 2");
-        Log.d(TAG + "-AddPeer", "Mock dudes");
     }
 
     public void discoverPeers() {
@@ -172,11 +166,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     }
 
     public void connectToPeer(int i) {
-        if (this.isMock) {
-            Log.d(TAG, "Mock client clicked");
-            return;
-        }
-
+        this.peername = deviceNames[i];
         final WifiP2pDevice device = devices[i];
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
@@ -188,40 +178,25 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         manager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-//                activity.connectionWithPeerSuccess(deviceNames[i]);
                 Log.d(TAG, "connection sent to " + deviceNames[i]);
-                Toast.makeText(activity.getApplicationContext(), "Connection sent to  " + deviceNames[i], Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onFailure(int reason) {
-//                activity.connectionWithPeerFail(deviceNames[i]);
                 Log.d(TAG, "connection not sent to " + deviceNames[i] + ": " + reason);
-                Toast.makeText(activity.getApplicationContext(), "Couldn't connect to " + deviceNames[i], Toast.LENGTH_LONG).show();
             }
         });
     }
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
-        final InetAddress groupOwnerAddress = info.groupOwnerAddress;
-
         if(info.groupFormed) {
             Log.d(TAG, "onConnectionInfoAvailable - Group formed");
             Intent intent = new Intent(activity, ChatActivity.class);
-            intent.putExtra("info", info);
-            intent.putExtra("name", username);
+            intent.putExtra(USER_INFO, info);
+            intent.putExtra(MainActivity.USER_NAME, username);
+            intent.putExtra(PEER_NAME, peername);
             activity.startActivityForResult(intent, 1);
-
-//            if (info.isGroupOwner) {
-//                Log.d(TAG, "onConnectionInfoAvailable - Host");
-////                service=new ServerClass();
-////                service.start();
-//            } else {
-//                Log.d(TAG, "nConnectionInfoAvailable - Client");
-////                service=new ClientClass(groupOwnerAddress);
-////                service.start();
-//            }
         } else {
             Log.d(TAG, "onConnectionInfoAvailable - Group not formed");
         }

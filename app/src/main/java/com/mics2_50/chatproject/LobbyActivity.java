@@ -97,6 +97,7 @@ public class LobbyActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             controller.leaveGroups();
+            controller.discoverPeers();
         }
     }
 
