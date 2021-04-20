@@ -40,7 +40,7 @@ public class ChatActivity extends AppCompatActivity {
     private String username;
     private String peername;
     private WifiP2pInfo info;
-    private static MessageAdapter messageAdapter;
+    private MessageAdapter messageAdapter;
     private ListView messagesView;
 
     private ServerSocket serverSocket;
@@ -60,8 +60,6 @@ public class ChatActivity extends AppCompatActivity {
         messageAdapter = new MessageAdapter(this);
         messagesView = (ListView) findViewById(R.id.messages_view);
         messagesView.setAdapter(messageAdapter);
-
-        sender = new SocketMessageSender();
 
         // Get user name set in MainActivity
         Intent intent = getIntent();
@@ -97,7 +95,7 @@ public class ChatActivity extends AppCompatActivity {
             this.onMessage(msg);
             Log.d("Chat","Executing sendMessage");
 
-            sender.message = msg;
+            SocketMessageSender sender = new SocketMessageSender(msg);
             sender.start();
 
             editTextMessage.getText().clear();
@@ -134,6 +132,7 @@ public class ChatActivity extends AppCompatActivity {
                 Log.d(TAG,"Exception in connectToOwner" + e.getMessage());
                 e.printStackTrace();
             }
+            listenToGroupOwner.start();
         }
     };
 
@@ -191,7 +190,15 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public class SocketMessageSender extends Thread {
-        public Message message;
+        private Message message;
+
+        public SocketMessageSender(Message message) {
+            this.message = message;
+        }
+
+        public void setMessage(Message message) {
+            this.message = message;
+        }
 
         @Override
         public void run() {
