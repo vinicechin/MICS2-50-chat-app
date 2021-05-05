@@ -35,13 +35,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatProjectMICS250">
-        <activity android:name=".LobbyActivity"></activity>
         <activity
-            android:name=".ChatActivity"
+            android:name=".LobbyActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".ChatActivity"
+            android:parentActivityName=".LobbyActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".LobbyActivity" />
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>

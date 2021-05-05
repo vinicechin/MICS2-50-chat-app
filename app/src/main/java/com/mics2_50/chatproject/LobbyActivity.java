@@ -26,6 +26,8 @@ public class LobbyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
+        setTitle("Available Chats");
+
         // Get user name set in MainActivity
         Intent intent = getIntent();
         this.username = intent.getStringExtra(MainActivity.USER_NAME);
@@ -59,18 +61,6 @@ public class LobbyActivity extends AppCompatActivity {
             Log.d(TAG, "Chat clicked: " + peername);
             controller.connectToPeer(position);
         });
-    }
-
-    public void connectionWithPeerSuccess(String peername) {
-        Toast toast = Toast.makeText(this, "Connected to  " + peername, Toast.LENGTH_LONG);
-//                toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL,0,0);
-        toast.show();
-    }
-
-    public void connectionWithPeerFail(String peername) {
-        Toast toast = Toast.makeText(this, "Couldn't connect to " + peername, Toast.LENGTH_LONG);
-//                toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL,0,0);
-        toast.show();
     }
 
     @Override

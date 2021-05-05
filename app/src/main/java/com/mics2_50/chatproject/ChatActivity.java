@@ -69,23 +69,23 @@ public class ChatActivity extends AppCompatActivity {
         info = (WifiP2pInfo) bundle.get(WifiDirectController.USER_INFO);
 
         // Set up socket connection between users: depend if is group owner or not
-        if (info.isGroupOwner) {
-            Log.d(TAG, "onConnectionInfoAvailable - Host");
-            try {
-                serverSocket = new ServerSocket(PORT);
-            } catch (Exception e) {
-                Log.d(TAG, "on create ServerSocket: "+ e.getMessage());
-            }
-            getClientInfo.start();
-        } else {
-            Log.d(TAG, "nConnectionInfoAvailable - Client");
-            try{
-                connectToOwner.start();
-            }catch(Exception e){
-                Log.d("Chat", "notGroupOwner "+ e.getMessage());
-                e.printStackTrace();
-            }
-        }
+//        if (info.isGroupOwner) {
+//            Log.d(TAG, "onConnectionInfoAvailable - Host");
+//            try {
+//                serverSocket = new ServerSocket(PORT);
+//            } catch (Exception e) {
+//                Log.d(TAG, "on create ServerSocket: "+ e.getMessage());
+//            }
+//            getClientInfo.start();
+//        } else {
+//            Log.d(TAG, "nConnectionInfoAvailable - Client");
+//            try{
+//                connectToOwner.start();
+//            }catch(Exception e){
+//                Log.d(TAG, "notGroupOwner "+ e.getMessage());
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public void sendMessage(final View view) {
@@ -93,7 +93,7 @@ public class ChatActivity extends AppCompatActivity {
         if (message.length() > 0) {
             final Message msg = new Message(message, username, true);
             this.onMessage(msg);
-            Log.d("Chat","Executing sendMessage");
+            Log.d(TAG,"Executing sendMessage");
 
             SocketMessageSender sender = new SocketMessageSender(msg);
             sender.start();
@@ -171,7 +171,7 @@ public class ChatActivity extends AppCompatActivity {
                 while(true){
                     String data;
                     if((data = fromGroupOwner.readLine()) != null){
-                        Log.d("Chat","Calling receive");
+                        Log.d(TAG,"Calling receive");
                         receive(data);
                     }
                 }
