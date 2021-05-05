@@ -12,16 +12,23 @@
     android:background="@drawable/fragment_peer"
     >
 
+    <ImageView android:id="@+id/imgIcon"
+        android:layout_width="40dp"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_vertical|left"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_gravity="left"
-        android:drawableLeft="@android:drawable/sym_action_chat"
-        android:drawablePadding="8dp"
         android:fontFamily="sans-serif"
-        android:gravity="center_vertical"
-        android:paddingLeft="10dp"
+        android:gravity="center_vertical|left"
         android:textAppearance="?attr/textAppearanceListItem"
         android:textSize="20dp" />
 </LinearLayout>

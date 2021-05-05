@@ -8,5 +8,5 @@
 
     <string name="mock_user">Mock</string>
     <string name="no_peers">No users available to chat, sorry...</string>
-    <string name="available_chats">Available Chats</string>
+    <string name="available_chats">Choose someone to chat with:</string>
 </resources>

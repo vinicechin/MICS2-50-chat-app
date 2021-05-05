@@ -13,6 +13,7 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
@@ -20,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 import com.mics2_50.chatproject.ChatActivity;
 import com.mics2_50.chatproject.MainActivity;
 import com.mics2_50.chatproject.R;
+import com.mics2_50.chatproject.adapter.PeerAdapter;
 
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -36,8 +38,10 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     private final WifiDirectBroadcastReceiver receiver;
 
     private String[] deviceNames;
+    private Integer[] deviceAvatars;
     private WifiP2pDevice[] devices;
-    private final ArrayAdapter<String> peersAdapter;
+    private final PeerAdapter peersAdapter;
+    private ListView peersView;
     private final Activity activity;
     private boolean isMock;
     private String username;
@@ -58,12 +62,14 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         channel = manager.initialize(activity, activity.getMainLooper(), null);
         receiver = new WifiDirectBroadcastReceiver(manager, channel, activity, this, peersListListener);
 
-        peersAdapter = new ArrayAdapter<>(activity, R.layout.fragment_peer, R.id.textView);
+        peersAdapter = new PeerAdapter(activity);
+        peersView = (ListView) activity.findViewById(R.id.peersListView);
+        peersView.setAdapter(peersAdapter);
 
         discoverPeers();
     }
 
-    public ArrayAdapter<String> getPeersAdapter() {
+    public PeerAdapter getPeersAdapter() {
         return this.peersAdapter;
     }
 
@@ -72,6 +78,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         this.isMock = false;
 
         deviceNames = new String[peers.getDeviceList().size()];
+        deviceAvatars = new Integer[peers.getDeviceList().size()];
         devices = new WifiP2pDevice[peers.getDeviceList().size()];
 
         int index = 0;
@@ -79,12 +86,18 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
             Log.d(TAG + "-AddPeer", peer.deviceName);
 
             deviceNames[index] = peer.deviceName;
+            deviceAvatars[index] = getAvatarId(index+1);
             devices[index] = peer;
 
             index++;
         }
 
-        peersAdapter.addAll(deviceNames);
+        deviceNames = new String[1];
+        deviceNames[0] = "Mock";
+        deviceAvatars = new Integer[1];
+        deviceAvatars[0] = getAvatarId(1);
+
+        peersAdapter.addAll(deviceNames, deviceAvatars);
     }
 
     public void discoverPeers() {
@@ -163,6 +176,10 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
         } catch (Exception e) {
             Log.d(TAG, "No such method");
         }
+    }
+
+    private Integer getAvatarId(int index) {
+        return R.drawable.avatar;
     }
 
     public void connectToPeer(int i) {
