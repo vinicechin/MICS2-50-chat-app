@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import static com.mics2_50.chatproject.wifidirect.WifiDirectController.PEER_NAME;
+
 public class MainActivity extends AppCompatActivity {
     public static final String USER_NAME = "com.mics2_50.chatproject.USERNAME";
     public static final String PREFERENCES_NAME = "com.mics2_50.chatproject.dataStorage";
@@ -83,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize intent
         Intent intent = new Intent(this, LobbyActivity.class);
 //        Intent intent = new Intent(this, ChatActivity.class);
+//        intent.putExtra(PEER_NAME, "Mock");
         String username = editText.getText().toString();
         intent.putExtra(USER_NAME, username);
 

@@ -70,6 +70,8 @@ public class ChatActivity extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         info = (WifiP2pInfo) bundle.get(WifiDirectController.USER_INFO);
 
+        setTitle(peername);
+
 //        Message m1 = new Message("teste", "Mock", false);
 //        String strMsg = m1.getJSONString("Mock");
 //
