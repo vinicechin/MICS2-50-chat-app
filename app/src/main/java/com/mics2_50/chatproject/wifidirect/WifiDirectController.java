@@ -30,6 +30,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     private final String TAG = "WDS-Main";
     public static final String USER_INFO = "com.mics2_50.chatproject.USER_INFO";
     public static final String PEER_NAME = "com.mics2_50.chatproject.PEER_NAME";
+    public static final String PEER_AVATARID = "com.mics2_50.chatproject.PEER_AVATARID";
 
     private final IntentFilter intentFilter = new IntentFilter();
 
@@ -46,6 +47,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
     private boolean isMock;
     private String username;
     private String peername;
+    private Integer peerAvatarId;
 
     public WifiDirectController(Activity activity, String username) {
         WifiDirectPeersListListener peersListListener = new WifiDirectPeersListListener(this);
@@ -184,6 +186,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
 
     public void connectToPeer(int i) {
         this.peername = deviceNames[i];
+        this.peerAvatarId = deviceAvatars[i];
         final WifiP2pDevice device = devices[i];
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
@@ -213,6 +216,7 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
             intent.putExtra(USER_INFO, info);
             intent.putExtra(MainActivity.USER_NAME, username);
             intent.putExtra(PEER_NAME, peername);
+            intent.putExtra(PEER_AVATARID, peerAvatarId);
             activity.startActivityForResult(intent, 1);
         } else {
             Log.d(TAG, "onConnectionInfoAvailable - Group not formed");

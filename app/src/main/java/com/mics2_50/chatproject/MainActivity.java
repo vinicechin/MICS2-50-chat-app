@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
     /** Called when the user taps the Enter button */
     public void enterPressed(View view) {
         // Initialize intent
-        Intent intent = new Intent(this, LobbyActivity.class);
-//        Intent intent = new Intent(this, ChatActivity.class);
+//        Intent intent = new Intent(this, LobbyActivity.class);
+        Intent intent = new Intent(this, ChatActivity.class);
         String username = editText.getText().toString();
         intent.putExtra(USER_NAME, username);
 

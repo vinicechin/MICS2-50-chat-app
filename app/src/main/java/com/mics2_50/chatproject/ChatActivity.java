@@ -39,6 +39,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText editTextMessage;
     private String username;
     private String peername;
+    private Integer peerAvatarId;
     private WifiP2pInfo info;
     private MessageAdapter messageAdapter;
     private ListView messagesView;
@@ -65,8 +66,17 @@ public class ChatActivity extends AppCompatActivity {
         Intent intent = getIntent();
         username = intent.getStringExtra(MainActivity.USER_NAME);
         peername = intent.getStringExtra(WifiDirectController.PEER_NAME);
+        peerAvatarId = intent.getIntExtra(WifiDirectController.PEER_AVATARID, R.drawable.avatar);
         Bundle bundle = intent.getExtras();
         info = (WifiP2pInfo) bundle.get(WifiDirectController.USER_INFO);
+
+
+        Message m1 = new Message("teste", "Mock", false);
+        String strMsg = m1.getJSONString("Mock");
+
+        m1 = new Message(strMsg, peerAvatarId);
+        messageAdapter.add(m1);
+        messagesView.setSelection(messagesView.getCount() - 1);
 
         // Set up socket connection between users: depend if is group owner or not
 //        if (info.isGroupOwner) {
@@ -185,7 +195,7 @@ public class ChatActivity extends AppCompatActivity {
     public void receive(String data){
         Log.d(TAG,"received something:");
         Log.d(TAG,data);
-        Message msg = new Message(data);
+        Message msg = new Message(data, peerAvatarId);
         this.onMessage(msg);
     }
 

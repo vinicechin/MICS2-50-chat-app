@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mics2_50.chatproject.R;
@@ -59,10 +60,12 @@ public class MessageAdapter extends BaseAdapter {
             convertView = messageInflater.inflate(R.layout.chat_message_received, null);
             holder.name = (TextView) convertView.findViewById(R.id.name);
             holder.messageBody = (TextView) convertView.findViewById(R.id.message_body);
+            holder.avatar = (ImageView)  convertView.findViewById(R.id.imgIcon);
             convertView.setTag(holder);
 
             holder.name.setText(message.getUsername());
             holder.messageBody.setText(message.getText());
+            holder.avatar.setImageResource(message.getAvatarId());
         }
 
         return convertView;
@@ -70,6 +73,7 @@ public class MessageAdapter extends BaseAdapter {
 }
 
 class MessageViewHolder {
+    public ImageView avatar;
     public TextView name;
     public TextView messageBody;
 }

@@ -10,16 +10,17 @@ public class Message {
 
     private String text;
     private String username;
+    private Integer avatarId;
     private boolean fromUser;
 
-    public Message(String string) {
+    public Message(String string, Integer avatarId) {
         try {
             JSONObject json = new JSONObject(string);
             this.text = (String) json.get("text");
             this.fromUser = (boolean) json.get("fromUser");
             this.username = (String) json.get("username");
 //            this.time = (String) json.get("time");
-
+            this.avatarId = avatarId;
         } catch (JSONException e) {
             Log.d(TAG, "couldn't parse JSON string: " + e.getMessage());
         }
@@ -33,6 +34,10 @@ public class Message {
 
     public String getText() {
         return this.text;
+    }
+
+    public Integer getAvatarId() {
+        return this.avatarId;
     }
 
     public String getUsername() {
