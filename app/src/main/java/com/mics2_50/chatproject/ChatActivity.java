@@ -70,32 +70,31 @@ public class ChatActivity extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         info = (WifiP2pInfo) bundle.get(WifiDirectController.USER_INFO);
 
-
-        Message m1 = new Message("teste", "Mock", false);
-        String strMsg = m1.getJSONString("Mock");
-
-        m1 = new Message(strMsg, peerAvatarId);
-        messageAdapter.add(m1);
-        messagesView.setSelection(messagesView.getCount() - 1);
+//        Message m1 = new Message("teste", "Mock", false);
+//        String strMsg = m1.getJSONString("Mock");
+//
+//        m1 = new Message(strMsg, peerAvatarId);
+//        messageAdapter.add(m1);
+//        messagesView.setSelection(messagesView.getCount() - 1);
 
         // Set up socket connection between users: depend if is group owner or not
-//        if (info.isGroupOwner) {
-//            Log.d(TAG, "onConnectionInfoAvailable - Host");
-//            try {
-//                serverSocket = new ServerSocket(PORT);
-//            } catch (Exception e) {
-//                Log.d(TAG, "on create ServerSocket: "+ e.getMessage());
-//            }
-//            getClientInfo.start();
-//        } else {
-//            Log.d(TAG, "nConnectionInfoAvailable - Client");
-//            try{
-//                connectToOwner.start();
-//            }catch(Exception e){
-//                Log.d(TAG, "notGroupOwner "+ e.getMessage());
-//                e.printStackTrace();
-//            }
-//        }
+        if (info.isGroupOwner) {
+            Log.d(TAG, "onConnectionInfoAvailable - Host");
+            try {
+                serverSocket = new ServerSocket(PORT);
+            } catch (Exception e) {
+                Log.d(TAG, "on create ServerSocket: "+ e.getMessage());
+            }
+            getClientInfo.start();
+        } else {
+            Log.d(TAG, "nConnectionInfoAvailable - Client");
+            try{
+                connectToOwner.start();
+            }catch(Exception e){
+                Log.d(TAG, "notGroupOwner "+ e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
     public void sendMessage(final View view) {

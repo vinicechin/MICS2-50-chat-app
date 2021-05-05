@@ -94,10 +94,10 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
             index++;
         }
 
-        deviceNames = new String[1];
-        deviceNames[0] = "Mock";
-        deviceAvatars = new Integer[1];
-        deviceAvatars[0] = getAvatarId(1);
+//        deviceNames = new String[1];
+//        deviceNames[0] = "Mock";
+//        deviceAvatars = new Integer[1];
+//        deviceAvatars[0] = getAvatarId(1);
 
         peersAdapter.addAll(deviceNames, deviceAvatars);
     }
