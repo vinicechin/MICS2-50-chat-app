@@ -70,7 +70,9 @@ public class PeerAdapter extends BaseAdapter {
         convertView.setTag(holder);
 
         holder.username.setText(username);
-        holder.avatar.setImageResource(avatarId);
+        if (avatarId != null) {
+            holder.avatar.setImageResource(avatarId);
+        }
 
         return convertView;
     }

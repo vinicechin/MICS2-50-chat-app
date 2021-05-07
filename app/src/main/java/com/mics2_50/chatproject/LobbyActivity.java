@@ -3,6 +3,7 @@ package com.mics2_50.chatproject;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -14,12 +15,16 @@ import android.widget.Toast;
 
 import com.mics2_50.chatproject.wifidirect.WifiDirectController;
 
+import static com.mics2_50.chatproject.MainActivity.PREFERENCES_NAME;
+
 public class LobbyActivity extends AppCompatActivity {
     private final String TAG = "APP-Lobby-Act";
 
     private ListView peersListView;
     private WifiDirectController controller;
     private String username;
+
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +33,17 @@ public class LobbyActivity extends AppCompatActivity {
 
         setTitle("Available Chats");
 
+        sharedPref = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
+
         // Get user name set in MainActivity
         Intent intent = getIntent();
-        this.username = intent.getStringExtra(MainActivity.USER_NAME);
+
+        String username = intent.getStringExtra(MainActivity.USER_NAME);
+        if (username == null) {
+            this.username = sharedPref.getString(MainActivity.USER_NAME, "");
+        } else {
+            this.username = username;
+        }
 
         controller = new WifiDirectController(this, this.username);
 

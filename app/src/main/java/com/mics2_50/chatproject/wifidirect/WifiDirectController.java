@@ -85,12 +85,12 @@ public class WifiDirectController implements WifiP2pManager.ConnectionInfoListen
 
         int index = 0;
         for (WifiP2pDevice peer : peers.getDeviceList()) {
-            Log.d(TAG + "-AddPeer", peer.deviceName);
 
             deviceNames[index] = peer.deviceName;
             deviceAvatars[index] = getAvatarId(index+1);
             devices[index] = peer;
 
+            Log.d(TAG + "-AddPeer", peer.deviceName + " - " + deviceAvatars[index]);
             index++;
         }
 
