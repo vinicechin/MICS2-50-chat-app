@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.maps.GoogleMap;
+
 import static com.mics2_50.chatproject.wifidirect.WifiDirectController.PEER_NAME;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String PREFERENCES_NAME = "com.mics2_50.chatproject.dataStorage";
 
     private SharedPreferences sharedPref;
+    private GoogleMap map;
 
     private EditText editText;
     private Button enterButton;
