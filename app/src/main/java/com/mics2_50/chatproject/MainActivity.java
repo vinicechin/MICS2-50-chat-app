@@ -18,10 +18,11 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
 import static com.mics2_50.chatproject.wifidirect.WifiDirectController.PEER_NAME;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String USER_NAME = "com.mics2_50.chatproject.USERNAME";
     public static final String PREFERENCES_NAME = "com.mics2_50.chatproject.dataStorage";
 
@@ -144,6 +145,22 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // if the permissions have already been granted do the following
             Log.d("permission", "already granted");
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        enableMyLocation();
+    }
+
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (map != null) {
+                map.setMyLocationEnabled(true);
+            }
+        } else {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
     }
 }
