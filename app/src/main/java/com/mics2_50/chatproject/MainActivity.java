@@ -8,6 +8,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,6 +25,8 @@ import static com.mics2_50.chatproject.wifidirect.WifiDirectController.PEER_NAME
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     public static final String USER_NAME = "com.mics2_50.chatproject.USERNAME";
+    public static final String LATITUDE = "com.mics2_50.chatproject.LATITUDE";
+    public static final String LONGITUDE = "com.mics2_50.chatproject.LONGITUDE";
     public static final String PREFERENCES_NAME = "com.mics2_50.chatproject.dataStorage";
 
     private SharedPreferences sharedPref;
@@ -152,6 +155,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         enableMyLocation();
+
+        Location loc = map.getMyLocation();
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(LATITUDE, "" + loc.getLatitude());
+        editor.putString(LONGITUDE, "" + loc.getLongitude());
     }
 
     private void enableMyLocation() {
