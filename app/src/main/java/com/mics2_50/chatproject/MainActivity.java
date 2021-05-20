@@ -155,18 +155,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         enableMyLocation();
-
-        Location loc = map.getMyLocation();
-
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(LATITUDE, "" + loc.getLatitude());
-        editor.putString(LONGITUDE, "" + loc.getLongitude());
     }
 
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (map != null) {
                 map.setMyLocationEnabled(true);
+
+                Location loc = map.getMyLocation();
+
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(LATITUDE, "" + loc.getLatitude());
+                editor.putString(LONGITUDE, "" + loc.getLongitude());
             }
         } else {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
